@@ -10,7 +10,7 @@ public class Jogador implements Serializable {
 
     @Id
     @GeneratedValue
-    @Column(name="id_regiao",nullable = false)
+    @Column(name="id_jogador",nullable = false)
     private int id;
     private String email;
     private String nome;

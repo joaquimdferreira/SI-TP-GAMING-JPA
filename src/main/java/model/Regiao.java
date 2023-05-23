@@ -8,11 +8,19 @@ import java.io.Serializable;
 public class Regiao implements Serializable {
     @Id
     @GeneratedValue
+
     @Column(name="id_regiao",nullable = false)
     private Integer id;
 
-    @Column(name="nome_regiao",unique = true,length = 30, nullable = false)
+    @Column(name="nome_regiao",unique = true, nullable = false)
     private String nome;
+
+    public Regiao() {}
+
+    public Regiao(int id, String nome) {
+        this.id = id;
+        this.nome = nome;
+    }
 
     public int getId() { return this.id; }
 
