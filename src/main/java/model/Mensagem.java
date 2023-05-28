@@ -2,6 +2,10 @@ package model;
 
 import jakarta.persistence.*;
 
+import java.sql.Timestamp;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Set;
 
@@ -49,4 +53,12 @@ public class Mensagem {
 
     public Jogador getJogador() { return this.jogador; }
     public void setJogador(Jogador j) { this.jogador = j; }
+
+    public static boolean verifyData(Date data) throws ParseException {
+        DateFormat date_format_obj = new SimpleDateFormat("dd/MM/yy HH:mm:ss");
+        Timestamp curr = new Timestamp(System.currentTimeMillis());
+        Date dt = DateFormat.getDateInstance().parse(date_format_obj.format(curr));
+        if(data.compareTo(dt) <= 0) return true;
+        return false;
+    }
 }

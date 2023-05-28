@@ -41,4 +41,8 @@ public class PartidaNormal implements Serializable {
     public int getPontuacao() { return this.pontuacao; }
     public void setPontuacao(int p) { this.pontuacao = p; }
 
+    public boolean checkDificudade(int d) {
+        return d > 0 && d < 6;
+    }
+
 }

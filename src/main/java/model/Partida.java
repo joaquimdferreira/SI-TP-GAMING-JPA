@@ -4,6 +4,10 @@ import jakarta.persistence.*;
 
 import java.io.Serializable;
 import java.lang.annotation.Target;
+import java.sql.Timestamp;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 
 @Entity
@@ -49,4 +53,20 @@ public class Partida implements Serializable {
 
     public Regiao getRegiao() { return this.regiao; }
     public void setRegiao(Regiao regiao) { this.regiao = regiao; }
+
+    public boolean checkDataInicio(Date data) throws ParseException {
+        DateFormat date_format_obj = new SimpleDateFormat("dd/MM/yy HH:mm:ss");
+        Timestamp curr = new Timestamp(System.currentTimeMillis());
+        Date dt = DateFormat.getDateInstance().parse(date_format_obj.format(curr));
+        if(data.compareTo(dt) <= 0) return true;
+        return false;
+    }
+
+    public boolean checkDataFim(Date data) throws ParseException {
+        DateFormat date_format_obj = new SimpleDateFormat("dd/MM/yy HH:mm:ss");
+        Timestamp curr = new Timestamp(System.currentTimeMillis());
+        Date dt = DateFormat.getDateInstance().parse(date_format_obj.format(curr));
+        if(data.compareTo(dt) <= 0 && data.after(this.data_fim)) return true;
+        return false;
+    }
 }
