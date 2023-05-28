@@ -8,7 +8,6 @@ import java.io.Serializable;
 public class Regiao implements Serializable {
     @Id
     @GeneratedValue
-
     @Column(name="id_regiao",nullable = false)
     private Integer id;
 
