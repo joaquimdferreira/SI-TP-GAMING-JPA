@@ -9,18 +9,14 @@ public class EstatisticaJogador {
     @OneToOne
     @PrimaryKeyJoinColumn(name = "id_jogador")
     private Jogador jogador;
-
-    @Column(name = "n_partidas",nullable = false)
+    @Column(name = "n_partidas", nullable = false)
     private int n_partidas;
-
-    @Column(name = "n_jogos",nullable = false)
+    @Column(name = "n_jogos", nullable = false)
     private int n_jogos;
-
-    @Column(name = "total_pontos_jogador",nullable = false)
+    @Column(name = "total_pontos_jogador", nullable = false)
     private int totalP;
 
     public EstatisticaJogador() {}
-
     public EstatisticaJogador(int n_partidas, int n_jogos, int totalP) {
         this.n_partidas = n_partidas;
         this.n_jogos = n_jogos;
@@ -38,7 +34,6 @@ public class EstatisticaJogador {
     public int getN_jogos() {
         return n_jogos;
     }
-
     public void setN_jogos(int n_jogos) {
         this.n_jogos = n_jogos;
     }
@@ -46,7 +41,6 @@ public class EstatisticaJogador {
     public int getTotalP() {
         return totalP;
     }
-
     public void setTotalP(int totalP) {
         this.totalP = totalP;
     }

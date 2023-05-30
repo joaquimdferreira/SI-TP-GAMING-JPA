@@ -11,19 +11,15 @@ public class PartidaNormal implements Serializable {
     @ManyToOne
     @PrimaryKeyJoinColumn(name = "n_partida")
     private Partida partida;
-
     @OneToOne
-    @JoinColumn(name = "id_jogador",nullable = false)
+    @JoinColumn(name = "id_jogador", nullable = false)
     private Jogador jogador;
-
     @Column(name = "dificuldade", nullable = false)
     private short dificuldade;
-
-    @Column(name = "pontuacao",nullable = false)
+    @Column(name = "pontuacao", nullable = false)
     private int pontuacao;
 
     public PartidaNormal() {}
-
     public PartidaNormal(short dificuldade, int pontuacao) {
         this.dificuldade = dificuldade;
         this.pontuacao = pontuacao;
@@ -42,7 +38,14 @@ public class PartidaNormal implements Serializable {
     public void setPontuacao(int p) { this.pontuacao = p; }
 
     public boolean checkDificudade(int d) {
-        return d > 0 && d < 6;
+        return d > 0 && d <= 5;
+    }
+
+    public boolean checkCompra(Compra compra, Jogo jogo){
+        if(getJogador().getId() == compra.getJogador().getId()
+                && jogo.getRef() == compra.getJogo().getRef()
+        ) return true;
+        return false;
     }
 
 }

@@ -10,29 +10,26 @@ import java.util.Date;
 import java.util.Set;
 
 @Entity
+@IdClass(Conversa.class)
 @Table(name = "mensagem")
 public class Mensagem {
     @Id
     @GeneratedValue
     @Column(name = "id_mensagem", nullable = false)
     private int id;
-
     @ManyToOne
-    @JoinColumn(name = "id_conversa",nullable = false)
+    @Id
+    @PrimaryKeyJoinColumn(name = "id_conversa")
     private Conversa conversa;
-
-    @Column(name = "data",nullable = false)
+    @Column(name = "data", nullable = false)
     private Date data;
-
-    @Column(name = "texto",nullable = false)
+    @Column(name = "texto", nullable = false)
     private String texto;
-
     @ManyToOne
-    @JoinColumn(name = "id_jogador",nullable = false)
+    @JoinColumn(name = "id_jogador", nullable = false)
     private Jogador jogador;
 
     public Mensagem() {}
-
     public Mensagem(int id, Date data, String texto) {
         this.id = id;
         this.data = data;

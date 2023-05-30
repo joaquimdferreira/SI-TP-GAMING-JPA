@@ -7,12 +7,6 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-enum EstadoJogador {
-    Ativo,
-    Inativo,
-    Banido
-}
-
 @Entity
 @Table(name="jogador")
 public class Jogador implements Serializable {
@@ -25,6 +19,13 @@ public class Jogador implements Serializable {
     private String email;
     @Column(name = "nome", unique = true, nullable = false)
     private String nome;
+
+    public enum EstadoJogador {
+        Ativo,
+        Inativo,
+        Banido
+    }
+
     @Enumerated(EnumType.STRING)
     @Column(name = "estado", nullable = false)
     private EstadoJogador estado;
@@ -36,6 +37,8 @@ public class Jogador implements Serializable {
     private Set<Cracha> cracha_jogador;
     @ManyToMany
     private Set<Conversa> conversa_jogador;
+    @ManyToMany
+    private Set<PartidaMultijogador> partidaMul_jogador;
     @ManyToMany
     private Set<Jogador> amigos;
     @ManyToMany

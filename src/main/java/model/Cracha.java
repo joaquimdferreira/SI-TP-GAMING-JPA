@@ -14,7 +14,7 @@ public class Cracha {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name="id_cracha", unique = true, nullable = false)
     private int id;
-    @Column(name = "nome_cracha", unique = true, nullable = false)
+    @Column(name = "nome_cracha", nullable = false)
     private String nome;
     @ManyToOne
     @JoinColumn(name = "ref_jogo", referencedColumnName = "ref_jogo", nullable = false)

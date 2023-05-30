@@ -14,25 +14,22 @@ import java.util.Date;
 @Table(name="partida")
 public class Partida implements Serializable {
     @Id
-    @GeneratedValue
-    @Column(name="n_partida",nullable = false)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name="n_partida", unique = true, nullable = false)
     private int n_partida;
-
     @ManyToOne
     @JoinColumn(name = "ref_jogo", nullable = false)
     private Jogo jogo;
-
-    @Column(name = "data_inicio",nullable = false)
+    @Column(name = "data_inicio", nullable = false)
     private Date data_inicio;
-
     @Column(name = "data_fim")
     private Date data_fim;
 
     @ManyToOne
-    @JoinColumn(name = "id_regiao",nullable = false)
+    @JoinColumn(name = "id_regiao", nullable = false)
     private Regiao regiao;
-    public Partida() {};
 
+    public Partida() {};
     public Partida(int n_partida, Date data_inicio, Date data_fim) {
         this.n_partida = n_partida;
         this.data_inicio = data_inicio;
@@ -69,4 +66,10 @@ public class Partida implements Serializable {
         if(data.compareTo(dt) <= 0 && data.after(this.data_fim)) return true;
         return false;
     }
+
+    public boolean checkJogadorRegiao(Jogador jogador){
+        if(getRegiao().getId() == jogador.getId_regiao().getId()) return true;
+        return false;
+    }
+
 }
