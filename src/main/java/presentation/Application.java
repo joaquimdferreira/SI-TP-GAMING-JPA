@@ -75,7 +75,7 @@ public class Application {
     //Application loop, clears console, prints menu, gets input and processes it, making sure to close the connection
     public void Run() throws Exception {
         Login();
-        svc = new Services(con);
+        svc = new Services(con, reader);
         Option userInput = Option.Unknown;
         do {
             clearConsole();
