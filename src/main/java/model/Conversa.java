@@ -6,17 +6,18 @@ import java.io.Serializable;
 import java.util.Set;
 
 @Entity
-@IdClass(Conversa.class)
 @Table(name ="conversa")
 public class Conversa implements Serializable {
-    @Id
-    @GeneratedValue
-    @Column(name="id_conversa",nullable = false)
+
+    @EmbeddedId
+    private ConversaPK cPK;
+
+    @Column(name = "id_conversa", nullable = false)
     private int id;
     @ManyToMany
-    @Id
-    @PrimaryKeyJoinColumn(name = "id_jogador")
+    @JoinColumn(name = "id_jogador")
     private Set<Jogador> jogadores;
+
     @Column(name = "nome_conversa",nullable = false)
     private String nome;
 
@@ -34,4 +35,5 @@ public class Conversa implements Serializable {
 
     public Set<Jogador> getJogadores() { return this.jogadores; }
     public void setJogadores(Set<Jogador> j) { this.jogadores = j; }
+
 }

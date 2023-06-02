@@ -10,24 +10,28 @@ import java.util.Date;
 import java.util.Set;
 
 @Entity
-@IdClass(Conversa.class)
 @Table(name = "mensagem")
 public class Mensagem {
-    @Id
-    @GeneratedValue
+
+    @EmbeddedId
+    private MensagemPK mPK;
+
     @Column(name = "id_mensagem", nullable = false)
     private int id;
     @ManyToOne
-    @Id
-    @PrimaryKeyJoinColumn(name = "id_conversa")
+    @JoinColumns({
+            @JoinColumn(name="id_conversa", referencedColumnName="id_conversa"),
+            @JoinColumn(name="id_jogador", referencedColumnName="id_jogador")
+    })
     private Conversa conversa;
+    @ManyToOne
+    @JoinColumn(name = "id_jogador", nullable = false)
+    private Jogador jogador;
+
     @Column(name = "data", nullable = false)
     private Date data;
     @Column(name = "texto", nullable = false)
     private String texto;
-    @ManyToOne
-    @JoinColumn(name = "id_jogador", nullable = false)
-    private Jogador jogador;
 
     public Mensagem() {}
     public Mensagem(int id, Date data, String texto) {

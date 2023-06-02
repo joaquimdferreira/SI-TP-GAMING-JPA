@@ -2,21 +2,23 @@ package model;
 
 import jakarta.persistence.*;
 
-import java.util.Set;
+import java.io.Serializable;
 
 @Entity
-@IdClass(PartidaMultijogador.class)
 @Table(name = "partida_multijogador")
-public class PartidaMultijogador {
-    @Id
+public class PartidaMultijogador implements Serializable {
+
+    @EmbeddedId
+    private PartidaMultijogadorPK pmPK;
+
     @ManyToOne
-    @PrimaryKeyJoinColumn(name = "n_partida")
+    @JoinColumn(name = "n_partida")
     private Partida partida;
-    @Id
     @OneToOne
-    @JoinColumn(name = "id_jogador",nullable = false)
+    @JoinColumn(name = "id_jogador")
     private Jogador jogador;
-    @Column(name = "pontuacao",nullable = false)
+
+    @Column(name = "pontuacao", nullable = false)
     private int pontuacao;
 
     public enum Estado {
@@ -36,11 +38,8 @@ public class PartidaMultijogador {
         this.estado = estado;
     }
 
-    public Partida getPartida() { return this.partida; }
-    public void setPartida(Partida p) { this.partida = p; }
-
-    public Jogador getJogador() { return this.jogador; }
-    public void setJogador(Jogador j) { this.jogador = j; }
+    public PartidaMultijogadorPK getPartidaMultijogadorID() { return this.pmPK; }
+    public void setPartidaMultijogadorID(PartidaMultijogadorPK p) { this.pmPK = p; }
 
     public int getPontuacao() { return this.pontuacao; }
     public void setPontuacao(int p) { this.pontuacao = p; }
@@ -49,7 +48,7 @@ public class PartidaMultijogador {
     public void setEstado(Estado e) { this.estado = e; }
 
     public boolean checkCompra(Compra compra, Jogo jogo){
-        if(getJogador().getId() == compra.getJogador().getId()
+        if(getPartidaMultijogadorID().getJogador() == compra.getJogador().getId()
                 && jogo.getRef() == compra.getJogo().getRef()
         ) return true;
         return false;
