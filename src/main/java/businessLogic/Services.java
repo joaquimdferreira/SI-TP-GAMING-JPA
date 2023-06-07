@@ -35,7 +35,7 @@ public class Services {
 
         em.getTransaction().begin();
         try {
-            StoredProcedureQuery q = em.createStoredProcedureQuery("novoJogador_trans");
+            StoredProcedureQuery q = em.createStoredProcedureQuery("CALL novoJogador_trans");
             q.registerStoredProcedureParameter(1, String.class, ParameterMode.IN);
             q.registerStoredProcedureParameter(2, String.class, ParameterMode.IN);
             q.registerStoredProcedureParameter(3, Integer.class, ParameterMode.IN);
