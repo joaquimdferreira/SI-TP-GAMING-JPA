@@ -1,6 +1,7 @@
 package model;
 
 import jakarta.persistence.*;
+import org.eclipse.persistence.annotations.ReadOnly;
 
 import java.sql.Timestamp;
 import java.text.DateFormat;
@@ -24,9 +25,11 @@ public class Mensagem {
             @JoinColumn(name="id_jogador", referencedColumnName="id_jogador")
     })
     private Conversa conversa;
+    /*
     @ManyToOne
     @JoinColumn(name = "id_jogador", nullable = false)
     private Jogador jogador;
+    */
 
     @Column(name = "data", nullable = false)
     private Date data;
@@ -51,10 +54,10 @@ public class Mensagem {
 
     public String getTexto() { return this.texto; }
     public void setTexto(String t) { this.texto = t; }
-
+/*
     public Jogador getJogador() { return this.jogador; }
     public void setJogador(Jogador j) { this.jogador = j; }
-
+*/
     public static boolean verifyData(Date data) throws ParseException {
         DateFormat date_format_obj = new SimpleDateFormat("dd/MM/yy HH:mm:ss");
         Timestamp curr = new Timestamp(System.currentTimeMillis());

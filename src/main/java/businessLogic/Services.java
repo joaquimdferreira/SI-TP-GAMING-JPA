@@ -21,7 +21,7 @@ public class Services {
         this.mappers = new Mappers(em);
     }
 
-    void createJogador() throws IOException {
+    public void createJogador() throws IOException {
         System.out.println("Criar Jogador");
         System.out.print("Email: ");
         String email = reader.readLine();
@@ -53,7 +53,7 @@ public class Services {
         }
     }
 
-    void desativarJogador() throws IOException {
+    public void desativarJogador() throws IOException {
         System.out.println("Desativar Jogador");
         System.out.print("Nome: ");
         String nome = reader.readLine();
@@ -71,7 +71,7 @@ public class Services {
         }
     }
 
-    void banirJogador() throws IOException {
+    public void banirJogador() throws IOException {
         System.out.println("Banir Jogador");
         System.out.print("Nome: ");
         String nome = reader.readLine();
@@ -89,7 +89,7 @@ public class Services {
         }
     }
 
-    void totalPontosJogador() throws IOException {
+    public void totalPontosJogador() throws IOException {
         System.out.println("Total de Pontos de Jogador");
         System.out.print("Id: ");
         String id = reader.readLine();
@@ -116,7 +116,7 @@ public class Services {
         }
     }
 
-    void totalJogosJogador() throws IOException {
+    public void totalJogosJogador() throws IOException {
         System.out.println("Total de Jogos de Jogador");
         System.out.print("Id: ");
         String id = reader.readLine();
@@ -143,13 +143,13 @@ public class Services {
         }
     }
 
-    void pontosJogoPorJogador() throws IOException {
-        System.out.println("Jogo - Pontos por Jogador");
+    public void pontosJogoPorJogador() throws IOException {
+        System.out.println("Total Pontos por Jogador num Jogo");
         System.out.print("Id: ");
         String ref = reader.readLine();
         em.getTransaction().begin();
         try {
-            StoredProcedureQuery q = em.createStoredProcedureQuery("totalJogosJogador");
+            StoredProcedureQuery q = em.createStoredProcedureQuery("pontosJogoPorJogador");
             q.registerStoredProcedureParameter(1, String.class, ParameterMode.IN);
             q.setParameter(1, ref);
             q.execute();
@@ -166,7 +166,7 @@ public class Services {
         }
     }
 
-    void associarCracha() throws IOException {
+    public void associarCracha() throws IOException {
         System.out.println("Associar Cracha");
         System.out.print("Jogador Id: ");
         String id = reader.readLine();
@@ -198,7 +198,7 @@ public class Services {
         }
     }
 
-    void iniciarConversa() throws IOException {
+    public void iniciarConversa() throws IOException {
         System.out.println("Iniciar Conversa");
         System.out.print("Jogador Id: ");
         String id = reader.readLine();
@@ -229,7 +229,7 @@ public class Services {
         }
     }
 
-    void juntarConversa() throws IOException {
+    public void juntarConversa() throws IOException {
         System.out.println("Juntar a Conversa");
         System.out.print("Jogador Id: ");
         String j = reader.readLine();
@@ -259,7 +259,7 @@ public class Services {
         }
     }
 
-    void enviarMensagem() throws IOException {
+    public void enviarMensagem() throws IOException {
         System.out.println("Enviar Mensagem");
         System.out.print("Jogador Id: ");
         String j = reader.readLine();
@@ -293,7 +293,7 @@ public class Services {
         }
     }
 
-    void jogadorTotalInfo() {
+    public void jogadorTotalInfo() {
         em.getTransaction().begin();
         System.out.println("Criando vista... ");
         try {
@@ -310,7 +310,7 @@ public class Services {
         }
     }
 
-    void associarCracha2() throws IOException {
+    public void associarCracha2() throws IOException {
         System.out.println("Associar Cracha");
         System.out.print("Jogador Id: ");
         String id = reader.readLine();
@@ -367,7 +367,7 @@ public class Services {
         }
     }
 
-    void associarCracha3() throws IOException {
+    public void associarCracha3() throws IOException {
         System.out.println("Associar Cracha");
         System.out.print("Jogador Id: ");
         String id = reader.readLine();

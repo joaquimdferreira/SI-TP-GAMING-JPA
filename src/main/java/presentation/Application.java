@@ -7,10 +7,25 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.HashMap;
 
+import businessLogic.*;
+
 public class Application {
     private enum Option {
         Unknown,
-        Exit
+        Exit,
+        CreatePlayer,
+        DeactivatePlayer,
+        BanPlayer,
+        ObtainPointsPlayer,
+        ObtainPointsGame,
+        ObtainPointsPlayerGame,
+        AssociateBadge,
+        IntiateConversation,
+        JoinConversation,
+        SendMessage,
+        ObtainPlayerInfo,
+        AssociateBadgeNoSQL,
+        AssociateBadgeWithSQL
     }
 
     private static Application __instance = null;
@@ -51,7 +66,70 @@ public class Application {
 
     private void updateMethods() {
         __dbMethods = new HashMap<Option,DbWorker>();
-        //__dbMethods.put(Option.AddCon, new DbWorker() {public void doWork() { Application.this.insertCondutor();}});
+        Services srv = new Services(con, reader);
+        __dbMethods.put(Option.CreatePlayer, new DbWorker() {
+            public void doWork() {
+                try { srv.createJogador(); } catch (IOException e) { throw new RuntimeException(e); }
+            }
+        });
+        __dbMethods.put(Option.DeactivatePlayer, new DbWorker() {
+            public void doWork() {
+                try { srv.desativarJogador(); } catch (IOException e) { throw new RuntimeException(e); }
+            }
+        });
+        __dbMethods.put(Option.BanPlayer, new DbWorker() {
+            public void doWork() {
+                try { srv.banirJogador(); } catch (IOException e) { throw new RuntimeException(e); }
+            }
+        });
+        __dbMethods.put(Option.ObtainPointsPlayer, new DbWorker() {
+            public void doWork() {
+                try { srv.totalPontosJogador(); } catch (IOException e) { throw new RuntimeException(e); }
+            }
+        });
+        __dbMethods.put(Option.ObtainPointsGame, new DbWorker() {
+            public void doWork() {
+                try { srv.totalJogosJogador(); } catch (IOException e) { throw new RuntimeException(e); }
+            }
+        });
+        __dbMethods.put(Option.ObtainPointsPlayerGame, new DbWorker() {
+            public void doWork() {
+                try { srv.pontosJogoPorJogador(); } catch (IOException e) { throw new RuntimeException(e); }
+            }
+        });
+        __dbMethods.put(Option.AssociateBadge, new DbWorker() {
+            public void doWork() {
+                try { srv.associarCracha(); } catch (IOException e) { throw new RuntimeException(e); }
+            }
+        });
+        __dbMethods.put(Option.IntiateConversation, new DbWorker() {
+            public void doWork() {
+                try { srv.iniciarConversa(); } catch (IOException e) { throw new RuntimeException(e); }
+            }
+        });
+        __dbMethods.put(Option.JoinConversation, new DbWorker() {
+            public void doWork() {
+                try { srv.juntarConversa(); } catch (IOException e) { throw new RuntimeException(e); }
+            }
+        });
+        __dbMethods.put(Option.SendMessage, new DbWorker() {
+            public void doWork() {
+                try { srv.enviarMensagem(); } catch (IOException e) { throw new RuntimeException(e); }
+            }
+        });
+        __dbMethods.put(Option.ObtainPlayerInfo, new DbWorker() {
+            public void doWork() { srv.jogadorTotalInfo(); }
+        });
+        __dbMethods.put(Option.AssociateBadgeNoSQL, new DbWorker() {
+            public void doWork() {
+                try { srv.associarCracha2(); } catch (IOException e) { throw new RuntimeException(e); }
+            }
+        });
+        __dbMethods.put(Option.AssociateBadgeWithSQL, new DbWorker() {
+            public void doWork() {
+                try { srv.associarCracha3(); } catch (IOException e) { throw new RuntimeException(e); }
+            }
+        });
     }
 
     private Option DisplayMenu() {
@@ -62,7 +140,20 @@ public class Application {
             System.out.println("Empresa GameOn");
             System.out.println();
             System.out.println(" 1.  Sair");
+            System.out.println(" 2.  Criar jogador");
+            System.out.println(" 3.  Desativar jogador");
+            System.out.println(" 4.  Banir jogador");
+            System.out.println(" 5.  Obter Total de Pontos de Jogador");
+            System.out.println(" 6.  Obter Total de Jogos de Jogador");
+            System.out.println(" 7.  Obter Total de Pontos por Jogador num Jogo");
+            System.out.println(" 8.  Associar Cracha");
+            System.out.println(" 9.  Iniciar Conversa");
+            System.out.println(" 10.  Juntar Conversa");
+            System.out.println(" 11.  Enviar Mensagem");
+            System.out.println(" 12.  Obter Informação do Jogador");
             System.out.println();
+            System.out.println(" 13.  Associar Cracha, sem procedimentos SQL");
+            System.out.println(" 14.  Associar Cracha, com funcionalidade original SQL");
             System.out.print(" >");
             String result = reader.readLine();
             option = Option.values()[Integer.parseInt(result)];
@@ -77,6 +168,7 @@ public class Application {
         Login();
         svc = new Services(con, reader);
         Option userInput = Option.Unknown;
+        updateMethods();
         do {
             clearConsole();
             userInput = DisplayMenu();
