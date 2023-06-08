@@ -21,7 +21,7 @@ public class Services {
         this.mappers = new Mappers(em);
     }
 
-    public void createJogador() throws IOException {
+    public void createJogador() throws IOException {            //WORKING
         System.out.println("Criar Jogador");
         System.out.print("Email: ");
         String email = reader.readLine();
@@ -35,17 +35,12 @@ public class Services {
 
         em.getTransaction().begin();
         try {
-            StoredProcedureQuery q = em.createStoredProcedureQuery("CALL novoJogador_trans");
-            q.registerStoredProcedureParameter(1, String.class, ParameterMode.IN);
-            q.registerStoredProcedureParameter(2, String.class, ParameterMode.IN);
-            q.registerStoredProcedureParameter(3, Integer.class, ParameterMode.IN);
-
+            Query q = em.createNativeQuery("call novoJogador_trans(?1, ?2, ?3)");
             q.setParameter(1, email);
             q.setParameter(2, nome);
             q.setParameter(3, id_regiao);
 
-            q.execute();
-
+            q.executeUpdate();
             em.getTransaction().commit();
         } catch (Exception e) {
             em.getTransaction().rollback();
@@ -53,17 +48,17 @@ public class Services {
         }
     }
 
-    public void desativarJogador() throws IOException {
+    public void desativarJogador() throws IOException {     //WORKING
         System.out.println("Desativar Jogador");
         System.out.print("Nome: ");
         String nome = reader.readLine();
 
         em.getTransaction().begin();
         try {
-            StoredProcedureQuery q = em.createStoredProcedureQuery("desativarJogador_trans");
-            q.registerStoredProcedureParameter(1, String.class, ParameterMode.IN);
+            Query q = em.createNativeQuery("call desativarJogador_trans(?1)");
             q.setParameter(1, nome);
-            q.execute();
+
+            q.executeUpdate();
             em.getTransaction().commit();
         } catch (Exception e) {
             em.getTransaction().rollback();
@@ -71,17 +66,17 @@ public class Services {
         }
     }
 
-    public void banirJogador() throws IOException {
+    public void banirJogador() throws IOException {         //WORKING
         System.out.println("Banir Jogador");
         System.out.print("Nome: ");
         String nome = reader.readLine();
 
         em.getTransaction().begin();
         try {
-            StoredProcedureQuery q = em.createStoredProcedureQuery("banirJogador_trans");
-            q.registerStoredProcedureParameter(1, String.class, ParameterMode.IN);
+            Query q = em.createNativeQuery("call banirJogador_trans(?1)");
             q.setParameter(1, nome);
-            q.execute();
+
+            q.executeUpdate();
             em.getTransaction().commit();
         } catch (Exception e) {
             em.getTransaction().rollback();
@@ -89,9 +84,9 @@ public class Services {
         }
     }
 
-    public void totalPontosJogador() throws IOException {
+    public void totalPontosJogador() throws IOException {           //WORKING
         System.out.println("Total de Pontos de Jogador");
-        System.out.print("Id: ");
+        System.out.print("Id do Jogador: ");
         String id = reader.readLine();
         int id_jogador;
         try {
@@ -107,8 +102,8 @@ public class Services {
             q.registerStoredProcedureParameter(2, Integer.class, ParameterMode.OUT);
             q.setParameter(1, id_jogador);
             q.execute();
-            em.getTransaction().commit();
             int total = (int) q.getOutputParameterValue(2);
+            em.getTransaction().commit();
             System.out.println("Total de pontos: "+total);
         } catch (Exception e) {
             em.getTransaction().rollback();
@@ -116,9 +111,9 @@ public class Services {
         }
     }
 
-    public void totalJogosJogador() throws IOException {
+    public void totalJogosJogador() throws IOException {           //WORKING
         System.out.println("Total de Jogos de Jogador");
-        System.out.print("Id: ");
+        System.out.print("Id do Jogador: ");
         String id = reader.readLine();
         int id_jogador;
         try {
@@ -134,39 +129,40 @@ public class Services {
             q.registerStoredProcedureParameter(2, Integer.class, ParameterMode.OUT);
             q.setParameter(1, id_jogador);
             q.execute();
-            em.getTransaction().commit();
             int total = (int) q.getOutputParameterValue(2);
-            System.out.println("Total de pontos: "+total);
+            em.getTransaction().commit();
+            System.out.println("Total número de jogos participados: "+total);
         } catch (Exception e) {
             em.getTransaction().rollback();
             e.printStackTrace();
         }
     }
 
-    public void pontosJogoPorJogador() throws IOException {
+    public void pontosJogoPorJogador() throws IOException {           //WORKING
         System.out.println("Total Pontos por Jogador num Jogo");
-        System.out.print("Id: ");
+        System.out.print("Id do Jogo: ");
         String ref = reader.readLine();
         em.getTransaction().begin();
         try {
             StoredProcedureQuery q = em.createStoredProcedureQuery("pontosJogoPorJogador");
             q.registerStoredProcedureParameter(1, String.class, ParameterMode.IN);
             q.setParameter(1, ref);
-            q.execute();
-            em.getTransaction().commit();
             List<Object[]> l = (List<Object[]>) q.getResultList();
             for(Object[] x : l) {
                 int id_jogador = (Integer)x[0];
-                int pontos = (Integer)x[1];
+                long pontos = (Long)x[1];
                 System.out.printf("Jogador/Pontos: %d/ %d \n", id_jogador, pontos);
             }
+            q.execute();
+
+            em.getTransaction().commit();
         } catch (Exception e) {
             em.getTransaction().rollback();
             e.printStackTrace();
         }
     }
 
-    public void associarCracha() throws IOException {
+    public void associarCracha() throws IOException {           //NOT TESTED
         System.out.println("Associar Cracha");
         System.out.print("Jogador Id: ");
         String id = reader.readLine();
@@ -183,14 +179,12 @@ public class Services {
         String tro = reader.readLine();
         em.getTransaction().begin();
         try {
-            StoredProcedureQuery q = em.createStoredProcedureQuery("associarCracha");
-            q.registerStoredProcedureParameter(1, Integer.class, ParameterMode.IN);
-            q.registerStoredProcedureParameter(2, String.class, ParameterMode.IN);
-            q.registerStoredProcedureParameter(3, String.class, ParameterMode.IN);
+            Query q = em.createNativeQuery("call associarCracha_procedure(?1, ?2, ?3)");
             q.setParameter(1, id_jogador);
             q.setParameter(2, ref);
             q.setParameter(3, tro);
-            q.execute();
+
+            q.executeUpdate();
             em.getTransaction().commit();
         } catch (Exception e) {
             em.getTransaction().rollback();
