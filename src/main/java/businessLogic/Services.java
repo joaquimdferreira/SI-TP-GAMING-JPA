@@ -45,6 +45,7 @@ public class Services {
         } catch (Exception e) {
             em.getTransaction().rollback();
             e.printStackTrace();
+            System.out.println("\nOperação Cancelada\n");
         }
     }
 
@@ -63,6 +64,7 @@ public class Services {
         } catch (Exception e) {
             em.getTransaction().rollback();
             e.printStackTrace();
+            System.out.println("\nOperação Cancelada\n");
         }
     }
 
@@ -81,6 +83,7 @@ public class Services {
         } catch (Exception e) {
             em.getTransaction().rollback();
             e.printStackTrace();
+            System.out.println("\nOperação Cancelada\n");
         }
     }
 
@@ -109,6 +112,7 @@ public class Services {
         } catch (Exception e) {
             em.getTransaction().rollback();
             e.printStackTrace();
+            System.out.println("\nOperação Cancelada\n");
         }
     }
 
@@ -137,6 +141,7 @@ public class Services {
         } catch (Exception e) {
             em.getTransaction().rollback();
             e.printStackTrace();
+            System.out.println("\nOperação Cancelada\n");
         }
     }
 
@@ -161,6 +166,7 @@ public class Services {
         } catch (Exception e) {
             em.getTransaction().rollback();
             e.printStackTrace();
+            System.out.println("\nOperação Cancelada\n");
         }
     }
 
@@ -192,6 +198,7 @@ public class Services {
         } catch (Exception e) {
             em.getTransaction().rollback();
             e.printStackTrace();
+            System.out.println("\nOperação Cancelada\n");
         }
     }
 
@@ -224,6 +231,7 @@ public class Services {
         } catch (Exception e) {
             em.getTransaction().rollback();
             e.printStackTrace();
+            System.out.println("\nOperação Cancelada\n");
         }
     }
 
@@ -254,6 +262,7 @@ public class Services {
         } catch (Exception e) {
             em.getTransaction().rollback();
             e.printStackTrace();
+            System.out.println("\nOperação Cancelada\n");
         }
     }
 
@@ -287,6 +296,7 @@ public class Services {
         } catch (Exception e) {
             em.getTransaction().rollback();
             e.printStackTrace();
+            System.out.println("\nOperação Cancelada\n");
         }
     }
 
@@ -325,6 +335,7 @@ public class Services {
         } catch (Exception e) {
             em.getTransaction().rollback();
             e.printStackTrace();
+            System.out.println("\nOperação Cancelada\n");
         }
     }
 
@@ -346,41 +357,40 @@ public class Services {
         em.getTransaction().begin();
         try {
             em.createNativeQuery("SET TRANSACTION ISOLATION LEVEL REPEATABLE READ").executeUpdate();
-            Query checkCracha = em.createNativeQuery("SELECT * FROM CRACHA WHERE nome_cracha = '%s'", tro);
-            checkCracha.executeUpdate();
+            Query checkCracha = em.createNativeQuery("SELECT * FROM CRACHA WHERE nome_cracha = '"+tro+"'");
             List<?> crachaResultList = checkCracha.getResultList();
             Query checkCompra = em.createNativeQuery(String.format(
-                    "SELECT * FROM COMPRA WHERE id_jogador = %d and ref_jogo = '%s'", id_jogador, ref
+                    "SELECT * FROM COMPRA WHERE id_jogador = "+id_jogador+" and ref_jogo = '"+ref+"'"
             ));
-            checkCracha.executeUpdate();
             List<?> compraResultList = checkCompra.getResultList();
             if(crachaResultList.isEmpty() || compraResultList.isEmpty())
                 throw new RuntimeException("NOT FOUND IN ASSOCIAR CRACHA 2");
             Query getCrachaInfo = em.createNativeQuery(String.format(
-                    "SELECT * FROM CRACHA WHERE nome_cracha = '%s' AND ref_jogo = '%s'", tro, ref
+                    "SELECT * FROM CRACHA WHERE nome_cracha = '"+tro+"' AND ref_jogo = '"+ref+"'"
             ));
-            getCrachaInfo.executeUpdate();
-            Cracha c = (Cracha) getCrachaInfo.getSingleResult();
+            Object[] o = (Object[]) getCrachaInfo.getSingleResult();
+            Cracha c = new Cracha((Integer) o[0], (String) o[1], (Integer) o[3], (String) o[4]);
             int lim_pontos = c.getPontos();
             int c_id = c.getId();
             String jogadorPontosJogo = String.format("SELECT * FROM (SELECT (CASE WHEN PN.id_jogador IS NULL THEN PM.id_jogador ELSE PN.id_jogador END) AS jogador, " +
                     "(CASE WHEN pontos_normal IS NULL THEN pontos_multijogador WHEN pontos_multijogador IS NULL THEN pontos_normal " +
                     "ELSE (pontos_normal + pontos_multijogador) END) AS pontos FROM ( SELECT PNOR.id_jogador, SUM(pontuacao) AS pontos_normal " +
-                    "FROM PARTIDA_NORMAL PNOR INNER JOIN PARTIDA PAR ON PNOR.n_partida = PAR.n_partida WHERE ref_jogo = '%s' " +
+                    "FROM PARTIDA_NORMAL PNOR INNER JOIN PARTIDA PAR ON PNOR.n_partida = PAR.n_partida WHERE ref_jogo = '"+ref+"' " +
                     "GROUP BY PNOR.id_jogador) AS PN FULL JOIN ( SELECT PMJ.id_jogador, SUM(pontuacao) AS pontos_multijogador " +
-                    "FROM PARTIDA_MULTIJOGADOR PMJ INNER JOIN PARTIDA PAR2 ON PMJ.n_partida = PAR2.n_partida WHERE ref_jogo = '%s' " +
-                    "GROUP BY PMJ.id_jogador) AS PM ON PN.id_jogador = PM.id_jogador)as R WHERE id_jogador = %d AND pontos >= %d",
-                    ref, ref, id_jogador, lim_pontos);
+                    "FROM PARTIDA_MULTIJOGADOR PMJ INNER JOIN PARTIDA PAR2 ON PMJ.n_partida = PAR2.n_partida WHERE ref_jogo = '"+ref+"' " +
+                    "GROUP BY PMJ.id_jogador) AS PM ON PN.id_jogador = PM.id_jogador)as R WHERE r.jogador = "+id_jogador+" AND r.pontos >= "+lim_pontos
+            );
             em.createNativeQuery(jogadorPontosJogo).getSingleResult();
-            if(em.createNativeQuery(String.format("SELECT * FROM CRACHA_JOGADOR WHERE id_cracha = %d AND id_jogador = %d", c_id, id_jogador)).getResultList().isEmpty())
+            if(!em.createNativeQuery(String.format("SELECT * FROM CRACHA_JOGADOR WHERE id_cracha = "+c_id+" AND id_jogador = "+id_jogador+"")).getResultList().isEmpty())
                 throw new RuntimeException("JOGADOR JA TEM CRACHA");
             em.createNativeQuery(String.format("INSERT INTO CRACHA_JOGADOR(id_cracha, id_jogador) " +
-                    "VALUES (%d, %d)", c_id, id_jogador)).executeUpdate();
+                    "VALUES ("+c_id+", "+id_jogador+")")).executeUpdate();
             em.getTransaction().commit();
             System.out.println("Cracha Associado");
         } catch (Exception e) {
             em.getTransaction().rollback();
             e.printStackTrace();
+            System.out.println("\nOperação Cancelada\n");
         }
     }
 
@@ -402,38 +412,36 @@ public class Services {
         em.getTransaction().begin();
         try {
             em.createNativeQuery("SET TRANSACTION ISOLATION LEVEL REPEATABLE READ").executeUpdate();
-            Query checkCracha = em.createNativeQuery("SELECT * FROM CRACHA WHERE nome_cracha = "+tro);
-            checkCracha.executeUpdate();
+            Query checkCracha = em.createNativeQuery("SELECT * FROM CRACHA WHERE nome_cracha = '"+tro+"'");
             List<?> crachaResultList = checkCracha.getResultList();
             Query checkCompra = em.createNativeQuery(String.format(
-                    "SELECT * FROM COMPRA WHERE id_jogador = %d and ref_jogo = %s", id_jogador, ref
+                    "SELECT * FROM COMPRA WHERE id_jogador = "+id_jogador+" and ref_jogo = '"+ref+"'"
             ));
-            checkCracha.executeUpdate();
             List<?> compraResultList = checkCompra.getResultList();
             if(crachaResultList.isEmpty() || compraResultList.isEmpty())
                 throw new RuntimeException("NOT FOUND IN ASSOCIAR CRACHA 2");
             Query getCrachaInfo = em.createNativeQuery(String.format(
-                    "SELECT * FROM CRACHA WHERE nome_cracha = %s AND ref_jogo = %s",
-                    tro, ref
+                    "SELECT * FROM CRACHA WHERE nome_cracha = '"+tro+"' AND ref_jogo = '"+ref+"'"
             ));
-            getCrachaInfo.executeUpdate();
-            Cracha c = (Cracha) getCrachaInfo.getSingleResult();
+            Object[] o = (Object[]) getCrachaInfo.getSingleResult();
+            Cracha c = new Cracha((Integer) o[0], (String) o[1], (Integer) o[3], (String) o[4]);
             int lim_pontos = c.getPontos();
             int c_id = c.getId();
             StoredProcedureQuery jogadorPontosJogo = em.createStoredProcedureQuery("pontosJogoPorJogador");
             jogadorPontosJogo.registerStoredProcedureParameter(1, String.class, ParameterMode.IN);
             jogadorPontosJogo.setParameter(1, ref);
-            int j_pontos = ((List<Object[]>)jogadorPontosJogo.getResultList()).stream()
+            long j_pontos = ((List<Object[]>)jogadorPontosJogo.getResultList()).stream()
                     .filter( t -> (Integer)t[0] == id_jogador)
-                    .map( t -> (Integer)t[1]).findFirst().get();
+                    .map( t2 -> (Long)t2[1]).findFirst().get();
             if(lim_pontos > j_pontos)throw new RuntimeException("JOGADOR NAO TEM PONTOS SUFICIENTES");
             em.createNativeQuery(String.format("INSERT INTO CRACHA_JOGADOR(id_cracha, id_jogador) " +
-                    "VALUES (%d, %d)", c_id, id_jogador)).executeUpdate();
+                    "VALUES ("+c_id+", "+id_jogador+")")).executeUpdate();
             em.getTransaction().commit();
             System.out.println("Cracha Associado");
         } catch (Exception e) {
             em.getTransaction().rollback();
             e.printStackTrace();
+            System.out.println("\nOperação Cancelada\n");
         }
     }
 }
