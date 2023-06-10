@@ -101,6 +101,7 @@ public class Services {
             q.registerStoredProcedureParameter(1, Integer.class, ParameterMode.IN);
             q.registerStoredProcedureParameter(2, Integer.class, ParameterMode.OUT);
             q.setParameter(1, id_jogador);
+
             q.execute();
             int total = (int) q.getOutputParameterValue(2);
             em.getTransaction().commit();
@@ -128,6 +129,7 @@ public class Services {
             q.registerStoredProcedureParameter(1, Integer.class, ParameterMode.IN);
             q.registerStoredProcedureParameter(2, Integer.class, ParameterMode.OUT);
             q.setParameter(1, id_jogador);
+
             q.execute();
             int total = (int) q.getOutputParameterValue(2);
             em.getTransaction().commit();
@@ -153,8 +155,8 @@ public class Services {
                 long pontos = (Long)x[1];
                 System.out.printf("Jogador/Pontos: %d/ %d \n", id_jogador, pontos);
             }
-            q.execute();
 
+            q.execute();
             em.getTransaction().commit();
         } catch (Exception e) {
             em.getTransaction().rollback();
@@ -162,7 +164,7 @@ public class Services {
         }
     }
 
-    public void associarCracha() throws IOException {           //NOT TESTED
+    public void associarCracha() throws IOException {           //WORKING
         System.out.println("Associar Cracha");
         System.out.print("Jogador Id: ");
         String id = reader.readLine();
@@ -186,13 +188,14 @@ public class Services {
 
             q.executeUpdate();
             em.getTransaction().commit();
+            System.out.println("Crachá associado com sucesso!");
         } catch (Exception e) {
             em.getTransaction().rollback();
             e.printStackTrace();
         }
     }
 
-    public void iniciarConversa() throws IOException {
+    public void iniciarConversa() throws IOException {          //WORKING
         System.out.println("Iniciar Conversa");
         System.out.print("Jogador Id: ");
         String id = reader.readLine();
@@ -207,23 +210,24 @@ public class Services {
         String nome = reader.readLine();
         em.getTransaction().begin();
         try {
-            StoredProcedureQuery q = em.createStoredProcedureQuery("iniciarConversa");
+            StoredProcedureQuery q = em.createStoredProcedureQuery("iniciarConversa_function");
             q.registerStoredProcedureParameter(1, Integer.class, ParameterMode.IN);
             q.registerStoredProcedureParameter(2, String.class, ParameterMode.IN);
             q.registerStoredProcedureParameter(3, Integer.class, ParameterMode.OUT);
             q.setParameter(1, id_jogador);
             q.setParameter(2, nome);
+
             q.execute();
-            em.getTransaction().commit();
             int con_id = (int) q.getOutputParameterValue(3);
-            System.out.printf("Conversa criada com id %d\n", con_id);
+            em.getTransaction().commit();
+            System.out.printf("Conversa criada com ID %d\n", con_id);
         } catch (Exception e) {
             em.getTransaction().rollback();
             e.printStackTrace();
         }
     }
 
-    public void juntarConversa() throws IOException {
+    public void juntarConversa() throws IOException {           //WORKING
         System.out.println("Juntar a Conversa");
         System.out.print("Jogador Id: ");
         String j = reader.readLine();
@@ -240,20 +244,20 @@ public class Services {
         }
         em.getTransaction().begin();
         try {
-            StoredProcedureQuery q = em.createStoredProcedureQuery("juntarConversa");
-            q.registerStoredProcedureParameter(1, Integer.class, ParameterMode.IN);
-            q.registerStoredProcedureParameter(2, Integer.class, ParameterMode.IN);
+            Query q = em.createNativeQuery("call juntarConversa_procedure(?1, ?2)");
             q.setParameter(1, id_jogador);
             q.setParameter(2, id_conversa);
-            q.execute();
+
+            q.executeUpdate();
             em.getTransaction().commit();
+            System.out.printf("Jogador com ID %d foi juntado à conversa com ID %d\n", id_jogador, id_conversa);
         } catch (Exception e) {
             em.getTransaction().rollback();
             e.printStackTrace();
         }
     }
 
-    public void enviarMensagem() throws IOException {
+    public void enviarMensagem() throws IOException {           //WORKING
         System.out.println("Enviar Mensagem");
         System.out.print("Jogador Id: ");
         String j = reader.readLine();
@@ -272,15 +276,14 @@ public class Services {
         String texto = reader.readLine();
         em.getTransaction().begin();
         try {
-            StoredProcedureQuery q = em.createStoredProcedureQuery("enviarMensagem");
-            q.registerStoredProcedureParameter(1, Integer.class, ParameterMode.IN);
-            q.registerStoredProcedureParameter(2, Integer.class, ParameterMode.IN);
-            q.registerStoredProcedureParameter(3, String.class, ParameterMode.IN);
+            Query q = em.createNativeQuery("call enviarMensagem_logic(?1, ?2, ?3)");
             q.setParameter(1, id_jogador);
             q.setParameter(2, id_conversa);
             q.setParameter(3, texto);
-            q.execute();
+
+            q.executeUpdate();
             em.getTransaction().commit();
+            System.out.printf("Mensagem enviada com sucesso!");
         } catch (Exception e) {
             em.getTransaction().rollback();
             e.printStackTrace();
@@ -295,9 +298,30 @@ public class Services {
                     "AS SELECT v_id_jogador as id_jogador, v_estado as estado, v_email as email, " +
                     "v_nome as nome, n_jogos, n_partidas, pontos_total " +
                     "FROM get_jti_data()");
+
+            Query v = em.createNativeQuery("SELECT * FROM JOGADOR_TOTAL_INFO");
+
             q.executeUpdate();
+            System.out.println("Vista criada\n");
+
+            List<Object[]> l = (List<Object[]>) v.getResultList();
+            System.out.println("Info atual de todos os jogadores:\n");
+            System.out.println("Nome,  ID,  Estado,  Email,  Número de jogos,  Número de partidas,  Pontuação Total");
+            for(Object[] x : l) {
+                int id_jogador = (Integer)x[0];
+                String estado = (String) x[1];
+                String email = (String)x[2];
+                String nome = (String)x[3];
+                int n_jogos = (Integer)x[4];
+                int n_partidas = (Integer)x[5];
+                int pontos_total = (Integer)x[6];
+                System.out.printf(" - %s, %d, %s, %s, %d, %d, %d\n",
+                        nome, id_jogador, estado, email, n_jogos, n_partidas, pontos_total);
+            }
+            System.out.println();
+
             em.getTransaction().commit();
-            System.out.println("Vista criada");
+
         } catch (Exception e) {
             em.getTransaction().rollback();
             e.printStackTrace();
@@ -322,19 +346,18 @@ public class Services {
         em.getTransaction().begin();
         try {
             em.createNativeQuery("SET TRANSACTION ISOLATION LEVEL REPEATABLE READ").executeUpdate();
-            Query checkCracha = em.createNativeQuery("SELECT * FROM CRACHA WHERE nome_cracha = "+tro);
+            Query checkCracha = em.createNativeQuery("SELECT * FROM CRACHA WHERE nome_cracha = '%s'", tro);
             checkCracha.executeUpdate();
             List<?> crachaResultList = checkCracha.getResultList();
             Query checkCompra = em.createNativeQuery(String.format(
-                    "SELECT * FROM COMPRA WHERE id_jogador = %d and ref_jogo = %s", id_jogador, ref
+                    "SELECT * FROM COMPRA WHERE id_jogador = %d and ref_jogo = '%s'", id_jogador, ref
             ));
             checkCracha.executeUpdate();
             List<?> compraResultList = checkCompra.getResultList();
             if(crachaResultList.isEmpty() || compraResultList.isEmpty())
                 throw new RuntimeException("NOT FOUND IN ASSOCIAR CRACHA 2");
             Query getCrachaInfo = em.createNativeQuery(String.format(
-                    "SELECT * FROM CRACHA WHERE nome_cracha = %s AND ref_jogo = %s",
-                    tro, ref
+                    "SELECT * FROM CRACHA WHERE nome_cracha = '%s' AND ref_jogo = '%s'", tro, ref
             ));
             getCrachaInfo.executeUpdate();
             Cracha c = (Cracha) getCrachaInfo.getSingleResult();
@@ -343,9 +366,9 @@ public class Services {
             String jogadorPontosJogo = String.format("SELECT * FROM (SELECT (CASE WHEN PN.id_jogador IS NULL THEN PM.id_jogador ELSE PN.id_jogador END) AS jogador, " +
                     "(CASE WHEN pontos_normal IS NULL THEN pontos_multijogador WHEN pontos_multijogador IS NULL THEN pontos_normal " +
                     "ELSE (pontos_normal + pontos_multijogador) END) AS pontos FROM ( SELECT PNOR.id_jogador, SUM(pontuacao) AS pontos_normal " +
-                    "FROM PARTIDA_NORMAL PNOR INNER JOIN PARTIDA PAR ON PNOR.n_partida = PAR.n_partida WHERE ref_jogo = %s " +
+                    "FROM PARTIDA_NORMAL PNOR INNER JOIN PARTIDA PAR ON PNOR.n_partida = PAR.n_partida WHERE ref_jogo = '%s' " +
                     "GROUP BY PNOR.id_jogador) AS PN FULL JOIN ( SELECT PMJ.id_jogador, SUM(pontuacao) AS pontos_multijogador " +
-                    "FROM PARTIDA_MULTIJOGADOR PMJ INNER JOIN PARTIDA PAR2 ON PMJ.n_partida = PAR2.n_partida WHERE ref_jogo = %s " +
+                    "FROM PARTIDA_MULTIJOGADOR PMJ INNER JOIN PARTIDA PAR2 ON PMJ.n_partida = PAR2.n_partida WHERE ref_jogo = '%s' " +
                     "GROUP BY PMJ.id_jogador) AS PM ON PN.id_jogador = PM.id_jogador)as R WHERE id_jogador = %d AND pontos >= %d",
                     ref, ref, id_jogador, lim_pontos);
             em.createNativeQuery(jogadorPontosJogo).getSingleResult();

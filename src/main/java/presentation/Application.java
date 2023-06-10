@@ -177,7 +177,6 @@ public class Application {
                 __dbMethods.get(userInput).doWork();	// Executa o método correspondente à opção escolhida
                 System.out.println("Pressione a tecla \"Enter\" para continuar... ");
                 System.in.read();
-                System.in.read();
             }
             catch(NullPointerException ex) {
                 System.out.print("");
